@@ -9,10 +9,11 @@
 #import "ViewController.h"
 
 @interface ViewController ()
-
+@property(nonatomic , strong) NSString *test;
 @end
 
 @implementation ViewController
+@dynamic test;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -34,7 +35,6 @@
         });
         
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        //        NSLog(@"++++++>>>>>   %@",@(i));
     }
     NSLog(@"执行完了");
 }
