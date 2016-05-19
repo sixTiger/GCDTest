@@ -17,7 +17,8 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self singleTest];
+    //    [self singleTest];
+    [self singleTestGroup];
 }
 #pragma mark - 信号量机制
 
@@ -38,6 +39,25 @@
     }
     NSLog(@"执行完了");
 }
+
+- (void)singleTestGroup {
+    
+    dispatch_queue_t q = dispatch_queue_create("itcast", DISPATCH_QUEUE_CONCURRENT);
+    for (int i = 0; i < 10 ; i++ ) {
+        dispatch_async(q, ^{
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            NSLog(@"%@---->%@",@(i),[NSThread currentThread]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"主线程回调");
+            });
+            sleep(1);
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            NSLog(@">>>>>>>>>>>>>>>>");
+        });
+    }
+    NSLog(@"执行完了");
+}
+
 - (void)groupTest
 {
     
