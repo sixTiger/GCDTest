@@ -28,7 +28,7 @@
     {
         
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        NSString *string = [NSString stringWithFormat:@"%@",@(i)];
+        NSString *string = [NSString stringWithFormat:@"%@   %@",@(i),[NSThread currentThread]];
         dispatch_async(dispatch_queue_create(string.UTF8String, DISPATCH_QUEUE_PRIORITY_DEFAULT ), ^{
             sleep(0.25);
             NSLog(@"%@---->%@",@(i),[NSThread currentThread]);
@@ -42,17 +42,22 @@
 
 - (void)singleTestGroup {
     
-    dispatch_queue_t q = dispatch_queue_create("itcast", DISPATCH_QUEUE_CONCURRENT);
+    static dispatch_queue_t q = nil;
+    if(q == nil) {
+        q = dispatch_queue_create("semaphore", DISPATCH_QUEUE_CONCURRENT);
+    }
+    NSLog(@"%s",dispatch_queue_get_label(q));
     for (int i = 0; i < 10 ; i++ ) {
         dispatch_async(q, ^{
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            NSLog(@"%@---->%@",@(i),[NSThread currentThread]);
+            __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"主线程回调");
+                NSLog(@"主线程回调 %@",@(i));
+                dispatch_semaphore_signal(semaphore);
             });
             sleep(1);
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            NSLog(@">>>>>>>>>>>>>>>>");
+            NSLog(@"%@---->%@",@(i),[NSThread currentThread]);
+            NSLog(@"当前任务执行完成");
         });
     }
     NSLog(@"执行完了");
@@ -73,7 +78,6 @@
             dispatch_semaphore_signal(semaphore);
         });
     }
-    //    dispatch_group_notify(<#dispatch_group_t group#>, <#dispatch_queue_t queue#>, <#^(void)block#>)
     // 和上边的代码效果相同
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSLog(@"任务完了");
