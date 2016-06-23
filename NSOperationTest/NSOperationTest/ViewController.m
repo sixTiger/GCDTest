@@ -20,16 +20,13 @@
  *  @return 初始化好的对列
  */
 - (NSOperationQueue *)myQueue {
-    if (_myQueue == nil)
-    {
+    if (_myQueue == nil) {
         _myQueue = [[NSOperationQueue alloc] init];
     }
     return _myQueue;
     
 }
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-
-{
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self opDemo4];
 }
 /**
@@ -159,7 +156,8 @@
  */
 - (void)opDemo1
 {
-    
+    [self.myQueue cancelAllOperations];
+    [self.myQueue cancelAllOperations];
     // 线程开启的数量是由GCD底层来决定的，程序员不能参与
     // Mac 10.10 ＋ Xcode 6.0.1 GCD & NSOperation => 能建立 60～70 个线程
     /**
@@ -168,22 +166,27 @@
      WIFI   :   5～6条线程就可以了，线程多，效率高，流量大，不花钱，可以随时充电！
      */
     // NSOperation提供过了一个属性->最大并发线程数量
-    self.myQueue.maxConcurrentOperationCount = 2;
-    for (int i = 0; i < 10; i++)
-    {
+    self.myQueue.maxConcurrentOperationCount = 4;
+    [[self.myQueue.operations firstObject] cancel];
+    for (int i = 0; i < 10; i++) {
         [self.myQueue addOperationWithBlock:^{
+            NSLog(@"%@\t%@",self.myQueue,[NSOperationQueue currentQueue]);
             // 阻塞自己的操作
+            __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
             [NSThread sleepForTimeInterval:1.0];
-            NSLog(@"%@ %d", [NSThread currentThread], i);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                NSLog(@"******** %@ %@",@(i),[NSThread currentThread]);
+                dispatch_semaphore_signal(semaphore);
+            }];
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            NSLog(@">>>> %@ %@",@(i),[NSThread currentThread]);
         }];
-        if(self.myQueue.operationCount >= 2)
-        {
+        if(self.myQueue.operationCount >= 2) {
             NSBlockOperation *lastOperation = [self.myQueue.operations lastObject];
             
             NSBlockOperation *descSecondOperation = self.myQueue.operations[self.myQueue.operations.count - 2];
             [lastOperation addDependency:descSecondOperation];
         }
-        NSLog(@"+++++%@ --->>>%@",@(self.myQueue.operations.count),@(self.myQueue.operationCount));
     }
 }
 

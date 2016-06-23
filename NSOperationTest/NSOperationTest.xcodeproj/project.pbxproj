@@ -352,6 +352,7 @@
 				INFOPLIST_FILE = NSOperationTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -362,6 +363,7 @@
 				INFOPLIST_FILE = NSOperationTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -418,6 +420,7 @@
 				628BC0471B38FB4600B653F4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		628BC0481B38FB4600B653F4 /* Build configuration list for PBXNativeTarget "NSOperationTestTests" */ = {
 			isa = XCConfigurationList;
@@ -426,6 +429,7 @@
 				628BC04A1B38FB4600B653F4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
