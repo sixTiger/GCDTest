@@ -18,8 +18,9 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     //    [self singleTest];
-//    [self singleTestGroup];
-    [self singleCountTest];
+    //    [self singleTestGroup];
+    //    [self singleCountTest];
+    [self gcdGroup2];
 }
 #pragma mark - 信号量机制
 
@@ -31,7 +32,7 @@
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     for (int i = 0; i < 100; i++)
     {   // 由于是异步执行的，所以每次循环Block里面的dispatch_semaphore_signal根本还没有执行就会执行dispatch_semaphore_wait，从而semaphore-1.当循环10此后，semaphore等于0，则会阻塞线程，直到执行了Block的dispatch_semaphore_signal 才会继续执行
-//        NSLog(@"%@",@());
+        //        NSLog(@"%@",@());
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         dispatch_group_async(group, queue, ^{
             NSLog(@"%i",i);
@@ -110,6 +111,31 @@
 
 
 #pragma mark - 任务组
+
+- (void)gcdGroup2 {
+    dispatch_queue_t aDQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_t group = dispatch_group_create();
+    // Add a task to the group
+    dispatch_group_async(group, aDQueue, ^{
+        sleep(1);
+        NSLog(@"task 1  %@\n",[NSThread currentThread]);
+    });
+    dispatch_group_async(group, aDQueue, ^{
+        sleep(1);
+        NSLog(@"task 2  %@\n",[NSThread currentThread]);
+    });
+    dispatch_group_async(group, aDQueue, ^{
+        sleep(2);
+        NSLog(@"task 3  %@\n",[NSThread currentThread]);
+    });
+    printf("wait 1 2 3 \n");
+    dispatch_group_notify(group, aDQueue, ^{
+        NSLog(@"task 1 2 3 finished >>>>>>>>>> %@\n",[NSThread currentThread]);
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    printf("task 1 2 3 finished <<<<<<<<<<<<\n");
+}
+
 /**
  *  GCD任务组
  */
