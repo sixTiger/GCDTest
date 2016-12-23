@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+@import AdSupport;
 
 @interface ViewController ()
 @property (nonatomic, strong) NSOperationQueue *myQueue;
@@ -27,11 +28,34 @@
     
 }
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self opDemo4];
+    //    Class judge=NSClassFromString(NSStringFromClass([ASIdentifierManager class]));
+    
+    Class judge=NSClassFromString(@"ASIdentifierManager");
+    NSObject *obj = [[judge alloc] init];
+    if (obj) {
+        NSLog(@"available");
+    } else {
+        NSLog(@"unavailable");
+    }
+    [self opDemo5];
 }
 /**
  *  NSInvocationOperation 测试样例
  */
+
+- (void)opDemo5
+{
+    NSInvocationOperation *invocationOperation1 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(demo4Test1) object:nil];
+    NSInvocationOperation *invocationOperation2 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(demo4Test2) object:nil];
+    NSInvocationOperation *invocationOperation3 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(demo4Test3) object:nil];
+    NSInvocationOperation *invocationOperation4 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(demo4Test4) object:nil];
+    self.myQueue.maxConcurrentOperationCount = 1;
+    [self.myQueue addOperations:@[invocationOperation1, invocationOperation2, invocationOperation3,invocationOperation4] waitUntilFinished:NO];
+    [self.myQueue waitUntilAllOperationsAreFinished];
+    NSLog(@">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
+}
+
 - (void)opDemo4
 {
     NSInvocationOperation *invocationOperation1 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(demo4Test1) object:nil];
@@ -47,20 +71,20 @@
     [self.myQueue addOperations:@[invocationOperation1, invocationOperation2, invocationOperation3,invocationOperation4] waitUntilFinished:NO];
     
 }
-- (void)demo4Test1
-{
+- (void)demo4Test1 {
+    sleep(1);
     NSLog(@"test1  %@",[NSThread currentThread]);
 }
-- (void)demo4Test2
-{
+- (void)demo4Test2 {
+    sleep(1);
     NSLog(@"test2  %@",[NSThread currentThread]);
 }
-- (void)demo4Test3
-{
+- (void)demo4Test3 {
+    sleep(1);
     NSLog(@"test3  %@",[NSThread currentThread]);
 }
-- (void)demo4Test4
-{
+- (void)demo4Test4 {
+    sleep(1);
     NSLog(@"test4  %@",[NSThread currentThread]);
 }
 #pragma mark - 操作的依赖->操作的执行顺序
@@ -133,6 +157,7 @@
     // 挂起－》暂停，暂停的是队列，让队列暂时不再派发任务
     NSLog(@"暂停");
     [self.myQueue setSuspended:YES];
+    [self.myQueue cancelAllOperations];
 }
 
 - (IBAction)resumue
