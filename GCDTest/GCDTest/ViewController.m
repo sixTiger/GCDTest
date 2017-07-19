@@ -20,7 +20,8 @@
     //    [self singleTest];
     //    [self singleTestGroup];
     //    [self singleCountTest];
-    [self gcdGroup2];
+//    [self gcdGroup2];
+    [self gcdDemo2];
 }
 #pragma mark - 信号量机制
 
@@ -274,12 +275,14 @@
         //先执行一个同步任务阻塞线程
         // 1. 用户登录
         dispatch_sync(q, ^{
+            sleep(1.0);
             NSLog(@"用户登录 %@", [NSThread currentThread]);
         });
         // 然后再执行异步任务（可以再开辟新的线程）
         // 2. 下载小说
         for (int i = 0; i < 5; i++) {
             dispatch_async(q, ^{
+                sleep(1.0);
                 NSLog(@"下载小说 %d %@", i, [NSThread currentThread]);
             });
         }
@@ -370,13 +373,20 @@
  */
 - (void)gcdDemo2
 {
+    static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
     dispatch_queue_t q = dispatch_queue_create("XXB", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_set_specific(q, kDispatchQueueSpecificKey, (__bridge void *)self, NULL);
     for (int i = 0; i < 10 ; i ++)
     {
         dispatch_async(q, ^{
+            ViewController *controller = (__bridge id)dispatch_get_specific(kDispatchQueueSpecificKey);
+            if (controller != nil) {
+                NSLog(@"XXB | - ");
+            }
             NSLog(@"%@  %d",[NSThread currentThread] , i);
         });
     }
+    NSLog(@"XXB - end");
 }
 
 /**
